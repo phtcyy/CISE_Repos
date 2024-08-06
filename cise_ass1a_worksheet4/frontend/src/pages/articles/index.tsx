@@ -1,5 +1,5 @@
+import { GetStaticProps, NextPage } from "next";
 import SortableTable from "../../components/table/SortableTable";
-import data from "../../utils/dummydata";
 
 interface ArticlesInterface {
   id: string;
@@ -37,25 +37,27 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
 };
 
 export const getStaticProps: GetStaticProps<ArticlesProps> = async (_) => {
-  // Map the data to ensure all articles have consistent property names
-  const articles = data.map((article) => ({
-    id: article.id ?? article._id,
-    title: article.title,
-    authors: article.authors,
-    source: article.source,
-    pubyear: article.pubyear,
-    doi: article.doi,
-    claim: article.claim,
-    evidence: article.evidence,
-  }));
+  // Fetch articles from the backend API
+  const response = await fetch('http://localhost:8082/articles'); // Replace with your API URL
+  const articles = await response.json();
 
+  // Map the data to ensure all articles have consistent property names
+  const formattedArticles = articles.map((article: any) => ({
+    id: article._id,
+    title: article.title,
+    authors: article.authors.join(', '), // Adjust based on your schema
+    source: article.source,
+    pubyear: article.publication_year, // Adjust based on your schema
+    doi: article.doi,
+    claim: article.claim || '', // If your schema doesn't have this field, remove or adjust
+    evidence: article.evidence || '', // If your schema doesn't have this field, remove or adjust
+  }));
 
   return {
     props: {
-      articles,
+      articles: formattedArticles,
     },
   };
 };
 
 export default Articles;
-

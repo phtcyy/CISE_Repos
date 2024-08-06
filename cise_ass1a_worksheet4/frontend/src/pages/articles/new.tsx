@@ -12,9 +12,13 @@ const NewDiscussion = () => {
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    console.log(
-      JSON.stringify({
+  
+    const response = await fetch('http://localhost:8082/articles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         title,
         authors,
         source,
@@ -22,16 +26,22 @@ const NewDiscussion = () => {
         doi,
         summary,
         linked_discussion: linkedDiscussion,
-      })
-    );
+      }),
+    });
+  
+ 
+    if (response.ok) {
+      alert('Article submitted successfully!');
+      // Optionally, you could reset the form or navigate to another page
+    } else {
+      alert('Failed to submit article');
+    }
   };
-
   // Some helper methods for the authors array
 
   const addAuthor = () => {
     setAuthors(authors.concat([""]));
   };
-
   const removeAuthor = (index: number) => {
     setAuthors(authors.filter((_, i) => i !== index));
   };
@@ -85,70 +95,69 @@ const NewDiscussion = () => {
           );
         })}
         <button
- onClick={() => addAuthor()}
- className={formStyles.buttonItem}
- style={{ marginLeft: "auto" }}
- type="button"
+onClick={() => addAuthor()}
+className={formStyles.buttonItem}
+style={{ marginLeft: "auto" }}
+type="button"
 >
- +
++
 </button>
 
 <label htmlFor="source">Source:</label>
 <input
- className={formStyles.formItem}
- type="text"
- name="source"
- id="source"
- value={source}
- onChange={(event) => {
-   setSource(event.target.value);
- }}
+className={formStyles.formItem}
+type="text"
+name="source"
+id="source"
+value={source}
+onChange={(event) => {
+  setSource(event.target.value);
+}}
 />
 
 <label htmlFor="pubYear">Publication Year:</label>
 <input
- className={formStyles.formItem}
- type="number"
- name="pubYear"
- id="pubYear"
- value={pubYear}
- onChange={(event) => {
-   const val = event.target.value;
-   if (val === "") {
-     setPubYear(0);
-   } else {
-     setPubYear(parseInt(val));
-   }
- }}
+className={formStyles.formItem}
+type="number"
+name="pubYear"
+id="pubYear"
+value={pubYear}
+onChange={(event) => {
+  const val = event.target.value;
+  if (val === "") {
+    setPubYear(0);
+  } else {
+    setPubYear(parseInt(val));
+  }
+}}
 />
 
 <label htmlFor="doi">DOI:</label>
 <input
- className={formStyles.formItem}
- type="text"
- name="doi"
- id="doi"
- value={doi}
- onChange={(event) => {
-   setDoi(event.target.value);
- }}
+className={formStyles.formItem}
+type="text"
+name="doi"
+id="doi"
+value={doi}
+onChange={(event) => {
+  setDoi(event.target.value);
+}}
 />
 
 <label htmlFor="summary">Summary:</label>
 <textarea
- className={formStyles.formTextArea}
- name="summary"
- value={summary}
- onChange={(event) => setSummary(event.target.value)}
- />
+className={formStyles.formTextArea}
+name="summary"
+value={summary}
+onChange={(event) => setSummary(event.target.value)}
+/>
 
- <button className={formStyles.formItem} type="submit">
-   Submit
- </button>
+<button className={formStyles.formItem} type="submit">
+  Submit
+</button>
 </form>
 </div>
 );
 };
 
 export default NewDiscussion;
-
